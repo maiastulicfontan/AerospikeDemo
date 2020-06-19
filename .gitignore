@@ -1,0 +1,15 @@
+.log
+
+*.classpath
+
+*.project
+
+rollingfile
+
+.settings/
+
+bin/
+
+logs/
+
+target/

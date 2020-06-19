@@ -13,3 +13,7 @@ bin/
 logs/
 
 target/
+
+test/
+
+webapp/

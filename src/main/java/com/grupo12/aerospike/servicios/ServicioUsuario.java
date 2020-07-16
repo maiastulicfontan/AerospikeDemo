@@ -47,12 +47,16 @@ public class ServicioUsuario {
 			Bin bin1 = new Bin("nombreusuario", nombreUsuario);
 			Bin bin2 = new Bin("password", password);
 			Bin bin3 = new Bin("genero", genero);
-			Bin bin4 = new Bin("contadorTweets", 0);
+			Bin bin4 = new Bin("contadortweets", 0);
 			Bin bin5 = new Bin("intereses", Arrays.asList(intereses.split(",")));
 			
 			cliente.put(writePolicy, key, bin1, bin2, bin3, bin4, bin5);
 			
 			System.out.println("\nINFO: Registro de usuario creado");
 		}
+	}
+	
+	public void insertarUsuario(String nombreUsuario, String password, String genero, int contadortweets, ) {
+		
 	}
 }

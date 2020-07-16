@@ -5,7 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -14,18 +16,25 @@ import com.aerospike.client.AerospikeClient;
 import com.aerospike.client.AerospikeException;
 import com.aerospike.client.Bin;
 import com.aerospike.client.Key;
+import com.aerospike.client.Record;
+import com.aerospike.client.ScanCallback;
+import com.aerospike.client.policy.Priority;
 import com.aerospike.client.policy.RecordExistsAction;
+import com.aerospike.client.policy.ScanPolicy;
 import com.aerospike.client.policy.WritePolicy;
 
 public class ServicioUsuario {
 	private AerospikeClient cliente;
+	private long contadorRegistros;
+	private Set<String> keys = new LinkedHashSet<String>();
 	
 	public ServicioUsuario() {
-		
+		contadorRegistros = 0;
 	}
 	
 	public ServicioUsuario (AerospikeClient cliente) {
 		this.cliente = cliente;
+		contadorRegistros = 0;
 	}
 	
 	public void crearUsuario() throws AerospikeException {
@@ -62,26 +71,36 @@ public class ServicioUsuario {
 	}
 	
 	public void insertarUsuario(String nombreUsuario, String password, String genero, String fechaNacimiento, int contadorTweets, String intereses ) {
-		WritePolicy writePolicy = new WritePolicy();
-		writePolicy.recordExistsAction = RecordExistsAction.UPDATE;
-		
-		Key key = new Key("test", "usuarios", nombreUsuario);
-		Bin bin1 = new Bin("nom_usuario", nombreUsuario);
-		Bin bin2 = new Bin("password", password);
-		Bin bin3 = new Bin("genero", genero);
-		Bin bin4 = new Bin("fecha_nac", fechaNacimiento);
-		Bin bin5 = new Bin("cont_tweets", contadorTweets);
-		Bin bin6 = new Bin("intereses", Arrays.asList(intereses.split(",")));
-		
-		cliente.put(writePolicy, key, bin1, bin2, bin3, bin4, bin5, bin6);		
+		try {	
+			WritePolicy writePolicy = new WritePolicy();
+			writePolicy.recordExistsAction = RecordExistsAction.UPDATE;
+			
+			Key key = new Key("test", "usuarios", nombreUsuario);
+			Bin bin1 = new Bin("nom_usuario", nombreUsuario);
+			Bin bin2 = new Bin("password", password);
+			Bin bin3 = new Bin("genero", genero);
+			Bin bin4 = new Bin("fecha_nac", fechaNacimiento);
+			Bin bin5 = new Bin("cont_tweets", contadorTweets);
+			Bin bin6 = new Bin("intereses", Arrays.asList(intereses.split(",")));
+			
+			cliente.put(writePolicy, key, bin1, bin2, bin3, bin4, bin5, bin6);
+			contadorRegistros++;
+		} catch (AerospikeException e) {
+			System.out.println("Aerospike Exception - Mensaje: "+e.getMessage());
+			System.out.println("Aerospike Exception - Stack Trace: "+e.getStackTrace());
+		}
 	}
 	
 	
-	public void insertarUsuariosDesdeCsv (String pathArchivoCsv) {
+	public void insertarUsuariosDesdeCsv () {
+		Scanner input = new Scanner(System.in);
+		System.out.println("\n**************Insertando desde archivo .csv**************\n");
+		System.out.println("Ingrese el path del archivo .csv");
+		String pathArchivoCsv = input.nextLine();
 		try {
 			Reader in = new FileReader(pathArchivoCsv);
 			Iterable<CSVRecord> registros = CSVFormat.RFC4180.withFirstRecordAsHeader().parse(in);
-			int contadorRegistros = 0;
+			int registrosInsertados = 0;
 			for (CSVRecord registro : registros) {
 				String nombreUsuario = registro.get("nombre_usuario");
 				String password = registro.get("password");
@@ -90,9 +109,9 @@ public class ServicioUsuario {
 				int contadorTweets = Integer.parseInt(registro.get("contador_tweets"));
 				String intereses = registro.get("intereses");
 				insertarUsuario(nombreUsuario, password, genero, fechaNacimiento, contadorTweets, intereses);
-				contadorRegistros++;
+				registrosInsertados++;
 			}
-			System.out.println("Se han insertado "+contadorRegistros+" registros.");
+			System.out.println("Se han insertado "+registrosInsertados+" registros.");
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found exception - Stack Trace: "+e.getStackTrace());
 		} catch (IOException e) {
@@ -103,4 +122,114 @@ public class ServicioUsuario {
 	public void printUsuario(String nombreUsuario, String password, String genero, String fechaNacimiento, int contadorTweets, String intereses ) {
 		System.out.println(nombreUsuario+","+password+","+genero+","+fechaNacimiento+","+contadorTweets+","+intereses);
 	}
+	
+	
+	public void mostrarUsuario () throws AerospikeException{
+		System.out.println("\n**************Mostrar usuario**************\n");
+		Record registroUsuario = null;
+		Key keyUsuario = null;
+		Scanner input = new Scanner(System.in);
+		
+		String nombreUsuario;
+		System.out.println("\nIngrese nombre de usuario: ");
+		nombreUsuario = input.nextLine();
+		
+		if (nombreUsuario != null && nombreUsuario.length()> 0) {
+			//Verificar que existe el registro
+			keyUsuario = new Key("test", "usuarios", nombreUsuario);
+			registroUsuario = cliente.get(null, keyUsuario);
+			if (registroUsuario != null) {
+				System.out.println("\nINFO: registro obtenido exitosamente. Detalles: \n");
+				System.out.println("Nombre de usuario: " + registroUsuario.getValue("nom_usuario")+ "\n");
+				System.out.println("Password: " + registroUsuario.getValue("password")+ "\n");
+				System.out.println("Género: " + registroUsuario.getValue("genero")+ "\n");
+				System.out.println("Fecha de nacimiento: " + registroUsuario.getValue("fecha_nac")+ "\n");
+				System.out.println("Contador de tweets: " + registroUsuario.getValue("cont_tweets")+ "\n");
+				System.out.println("Intereses: " + registroUsuario.getValue("intereses")+ "\n");
+			} else {
+				System.out.println("ERROR: Registro no encontrado\n");
+			}
+		} else {
+			System.out.println("ERROR: Registro no encontrado\n");
+		}
+	}
+	
+	
+	public void mostrarTodos () {
+		System.out.println("\n**************Mostrando todos los usuarios**************\n");
+		System.out.println("nom_usuario, password, genero, fecha_nac, cont_tweets, intereses");
+		ScanPolicy policy = new ScanPolicy();
+		policy.concurrentNodes = true;
+		policy.priority = Priority.LOW;
+		policy.includeBinData = true;
+		
+		cliente.scanAll(policy, "test", "usuarios", new ScanCallback() {
+			
+			@Override
+			public void scanCallback(Key key, Record registro) throws AerospikeException{
+				keys.add(registro.getValue("nom_usuario").toString());
+				System.out.println("\n"+registro.getValue("nom_usuario")+", "+registro.getValue("password")+", " +registro.getValue("genero")+", " + registro.getValue("fecha_nac")+
+						", " +registro.getValue("cont_tweets")+", " +registro.getValue("intereses")+"\n");
+			}
+		});
+		System.out.println("\nSe han encontrado "+contadorRegistros+" registros");
+		this.setKeys(keys);
+	}
+		
+	public void borrarUsuario() {
+		System.out.println("\n**************Borrar usuario**************\n");
+		Scanner input = new Scanner(System.in);	
+		String nombreUsuario;
+		System.out.println("\nIngrese nombre de usuario: ");
+		nombreUsuario = input.nextLine();
+		borrarUsuarioConParametro(nombreUsuario);
+		System.out.println("\nINFO: Se ha eliminado el registro del usuario "+nombreUsuario);
+	}
+	
+	public void borrarUsuarioConParametro(String nombreUsuario) {
+		Record registroUsuario = null;
+		Key keyUsuario = null;
+		WritePolicy writePolicy = new WritePolicy();
+		if (nombreUsuario != null && nombreUsuario.length()> 0) {
+			//Verificar que existe el registro
+			keyUsuario = new Key("test", "usuarios", nombreUsuario);
+			registroUsuario = cliente.get(null, keyUsuario);
+			if (registroUsuario != null) {
+				cliente.delete(writePolicy, keyUsuario);
+				//this.getKeys().remove(nombreUsuario);
+				contadorRegistros--;
+			} else {
+				System.out.println("\nERROR: Registro no encontrado\n");
+			}
+		} else {
+			System.out.println("ERROR: Registro no encontrado\n");
+		}	
+	}
+	
+	public void borrarTodos () {
+		System.out.println("\n**************Borrando todos los usuarios**************\n");
+		long tmpCantidadRegistros = contadorRegistros;
+		this.getKeys().forEach(k -> 
+			borrarUsuarioConParametro(k)
+		);
+		System.out.println("\nSe han eliminado "+tmpCantidadRegistros+" registros");
+	}
+
+	public long getContadorRegistros() {
+		return contadorRegistros;
+	}
+
+	public void setContadorRegistros(long contadorRegistros) {
+		this.contadorRegistros = contadorRegistros;
+	}
+
+	public Set<String> getKeys() {
+		return keys;
+	}
+
+	public void setKeys(Set<String> keys) {
+		this.keys = keys;
+	}
+	
+	
 }

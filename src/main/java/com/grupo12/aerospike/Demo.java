@@ -11,39 +11,39 @@ public class Demo {
 	private String seedHost;
 	private int port;
 	private AerospikeClient cliente;
-	
+
 	public Demo () {
 		ClientPolicy clientPolicy = new ClientPolicy();
 		this.cliente = new AerospikeClient (clientPolicy);
 	}
-	
+
 	public Demo (String seedHost, int port) {
 		ClientPolicy clientPolicy = new ClientPolicy();
 		this.seedHost = seedHost;
 		this.port = port;
 		this.cliente = new AerospikeClient (clientPolicy, seedHost, port);
 	}
-	
+
 	protected void finalize() throws Throwable{
 		if (this.cliente != null) {
 			this.cliente.close();
 		}
 	}
-	
+
 	protected void work () {
 		try {
 			System.out.println("INFO: Conectándose a Aerospike");
-			
+
 			// Estableciendo conexión con Aerospike
 			if (cliente == null || !cliente.isConnected()) {
 				System.out.println("\nERROR: Fallo en la conexión");
 			} else {
 				Scanner input = new Scanner (System.in);
 				System.out.println("\nINFO: Conexión a Aerospike exitosa");
-				
+
 				//Inicializar servicios
 				ServicioUsuario su = new ServicioUsuario(cliente);
-				
+
 				// Opciones
 				int seleccion = 1;
 				while (seleccion != 0) {
@@ -62,11 +62,11 @@ public class Demo {
 					System.out.println("0> Salir\n");
 					System.out.println("\nSeleccione 0-5 y presione Enter\n");
 					seleccion = input.nextInt();
-				
-				
+
+
 					switch (seleccion){
 						case 1:
-							System.out.println("\n**********Ha seleccionado: Cargar usuario manualmente**********\n"); 
+							System.out.println("\n**********Ha seleccionado: Cargar usuario manualmente**********\n");
 							su.crearUsuario();
 							break;
 						case 2:
@@ -91,9 +91,15 @@ public class Demo {
 							break;
 						case 7:
 							System.out.println("\n**********Ha seleccionado: consulta interesante 4**********\n");
+							su.consultaInteresante1();
 							break;
 						case 8:
 							System.out.println("\n**********Ha seleccionado: consulta interesante 5**********\n");
+							su.consultaInteresante2();
+							break;
+                        case 9:
+                            System.out.println("\n**********Ha seleccionado: consulta interesante 6**********\n");
+							su.consultaInteresante3();
 							break;
 						default:
 							break;
@@ -139,7 +145,7 @@ public class Demo {
 	}
 
 	public static void main(String[] args) {
-		Demo demo = new Demo("172.28.128.4", 3000);
+		Demo demo = new Demo("172.28.128.3", 3000);
 		ServicioUsuario su = new ServicioUsuario(demo.getCliente());
 		//su.insertarUsuariosDesdeCsv("src/main/resources/usuarios.csv");
 		//su.mostrarTodos();
@@ -153,3 +159,4 @@ public class Demo {
 	}
 
 }
+

@@ -4,9 +4,13 @@
 
 *.project
 
+*.iml
+
 rollingfile
 
 .settings/
+
+.idea/
 
 bin/
 

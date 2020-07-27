@@ -111,7 +111,7 @@ public class ServicioUsuario {
 	public void insertarUsuariosDesdeCsv () {
 		Scanner input = new Scanner(System.in);
 		System.out.println("\n**************Insertando desde archivo .csv**************\n");
-		System.out.println("Ingrese el path del archivo .csv");
+		System.out.println("Ingrese el path del archivo .csv\n");
 		String pathArchivoCsv = input.nextLine();
 		try {
 			Reader in = new FileReader(pathArchivoCsv);
@@ -127,16 +127,12 @@ public class ServicioUsuario {
 				insertarUsuario(nombreUsuario, password, genero, fechaNacimiento, contadorTweets, intereses);
 				registrosInsertados++;
 			}
-			System.out.println("Se han insertado "+registrosInsertados+" registros.");
+			System.out.println("\nSe han insertado "+registrosInsertados+" registros.\n");
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found exception - Stack Trace: "+e.getStackTrace());
 		} catch (IOException e) {
 			System.out.println("IO exception - Stack Trace: "+e.getStackTrace());
 		}
-	}
-
-	public void printUsuario(String nombreUsuario, String password, String genero, String fechaNacimiento, int contadorTweets, String intereses ) {
-		System.out.println(nombreUsuario+","+password+","+genero+","+fechaNacimiento+","+contadorTweets+","+intereses);
 	}
 
 
@@ -199,7 +195,6 @@ public class ServicioUsuario {
 		System.out.println("\nIngrese nombre de usuario: ");
 		nombreUsuario = input.nextLine();
 		borrarUsuarioConParametro(nombreUsuario);
-		System.out.println("\nINFO: Se ha eliminado el registro del usuario "+nombreUsuario);
 	}
 
 	public void borrarUsuarioConParametro(String nombreUsuario) {
@@ -214,6 +209,7 @@ public class ServicioUsuario {
 				cliente.delete(writePolicy, keyUsuario);
 				//this.getKeys().remove(nombreUsuario);
 				contadorRegistros--;
+				System.out.println("\nINFO: Se ha eliminado el registro del usuario "+nombreUsuario);
 			} else {
 				System.out.println("\nERROR: Registro no encontrado\n");
 			}
@@ -231,21 +227,6 @@ public class ServicioUsuario {
 		System.out.println("\nSe han eliminado "+tmpCantidadRegistros+" registros");
 	}
 
-	public long getContadorRegistros() {
-		return contadorRegistros;
-	}
-
-	public void setContadorRegistros(long contadorRegistros) {
-		this.contadorRegistros = contadorRegistros;
-	}
-
-	public Set<String> getKeys() {
-		return keys;
-	}
-
-	public void setKeys(Set<String> keys) {
-		this.keys = keys;
-	}
 	public void consultaInteresante1(){
 		System.out.println("\n**************Mostrando Aquellos usuarios masculinos con una cantidad de twits entre 10.000 y 20.000**************\n");
 		System.out.println("nom_usuario, password, genero, fecha_nac, cont_tweets, intereses");
@@ -348,7 +329,7 @@ public class ServicioUsuario {
 
 	}
 	public void consultaInteresante4(){
-		System.out.println("\n**************Mostrando a cuantos usuarios le interesa cada categoria de intereses**************\n");
+		System.out.println("\n**************Mostrando a cuantos usuarios les interesa cada categoria de intereses**************\n");
 		System.out.println("Interes			CantUsuarios");
 		ScanPolicy policy = new ScanPolicy();
 		policy.concurrentNodes = true;
@@ -454,6 +435,23 @@ public class ServicioUsuario {
 		});
 		System.out.println("\n" + nombreConsultaI5 + ", " + passwordConsultaI5 + ", " + generoConsultaI5 + ", " + fecha_nacConsultaI5 +
 				", " + cont_tweetsConsultaI5 + ", " + interesesConsultaI5 + "\n");
+	}
+	
+
+	public long getContadorRegistros() {
+		return contadorRegistros;
+	}
+
+	public void setContadorRegistros(long contadorRegistros) {
+		this.contadorRegistros = contadorRegistros;
+	}
+
+	public Set<String> getKeys() {
+		return keys;
+	}
+
+	public void setKeys(Set<String> keys) {
+		this.keys = keys;
 	}
 }
 

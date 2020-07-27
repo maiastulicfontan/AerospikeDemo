@@ -12,25 +12,25 @@ public class Demo {
 	private int port;
 	private AerospikeClient cliente;
 
-	public Demo () {
+	public Demo() {
 		ClientPolicy clientPolicy = new ClientPolicy();
-		this.cliente = new AerospikeClient (clientPolicy);
+		this.cliente = new AerospikeClient(clientPolicy);
 	}
 
-	public Demo (String seedHost, int port) {
+	public Demo(String seedHost, int port) {
 		ClientPolicy clientPolicy = new ClientPolicy();
 		this.seedHost = seedHost;
 		this.port = port;
-		this.cliente = new AerospikeClient (clientPolicy, seedHost, port);
+		this.cliente = new AerospikeClient(clientPolicy, seedHost, port);
 	}
 
-	protected void finalize() throws Throwable{
+	protected void finalize() throws Throwable {
 		if (this.cliente != null) {
 			this.cliente.close();
 		}
 	}
 
-	protected void work () {
+	protected void work() {
 		try {
 			System.out.println("INFO: Conectándose a Aerospike");
 
@@ -38,10 +38,10 @@ public class Demo {
 			if (cliente == null || !cliente.isConnected()) {
 				System.out.println("\nERROR: Fallo en la conexión");
 			} else {
-				Scanner input = new Scanner (System.in);
+				Scanner input = new Scanner(System.in);
 				System.out.println("\nINFO: Conexión a Aerospike exitosa");
 
-				//Inicializar servicios
+				// Inicializar servicio
 				ServicioUsuario su = new ServicioUsuario(cliente);
 
 				// Opciones
@@ -54,77 +54,81 @@ public class Demo {
 					System.out.println("4> Leer todos los registros de usuarios\n");
 					System.out.println("5> Eliminar el registro de un usuario\n");
 					System.out.println("6> Eliminar todos los registros de usuarios\n");
-					System.out.println("7> Consulta interesante 1\n");
-					System.out.println("8> Consulta interesante 2\n");
-					System.out.println("9> Consulta interesante 3\n");
-					System.out.println("10> Consulta interesante 4\n");
-					System.out.println("11> Consulta interesante 5\n");
+					System.out.println("7> Mostrar usuarios masculinos con una cantidad de twits entre 10.000 y 20.000\n");
+					System.out.println("8> Mostrar usuarios mayores de edad interesados unicamente en deportes\n");
+					System.out.println("9> Mostrar usuarios que no estan interesados en musica y arte\n");
+					System.out.println("10> Mostrar a cuantos usuarios les interesa cada categoria de intereses\n");
+					System.out.println("11> Mostrar registro de usuario femenino con mayor numero de tweets\n");
 					System.out.println("0> Salir\n");
-					System.out.println("\nSeleccione 0-5 y presione Enter\n");
+					System.out.println("\nSeleccione 0-11 y presione Enter\n");
 					seleccion = input.nextInt();
 
-
-					switch (seleccion){
-						case 1:
-							System.out.println("\n**********Ha seleccionado: Cargar usuario manualmente**********\n");
-							su.crearUsuario();
-							break;
-						case 2:
-							System.out.println("\n**********Ha seleccionado: Cargar usuarios desde un archivo .csv**********\n");
-								su.insertarUsuariosDesdeCsv();
-							break;
-						case 3:
-							System.out.println("\n**********Ha seleccionado: Leer el registro de un usuario**********\n");
-							su.mostrarUsuario();
-							break;
-						case 4:
-							System.out.println("\n**********Ha seleccionado: Leer todos los registros de usuarios**********\n");
-							su.mostrarTodos();
-							break;
-						case 5:
-							System.out.println("\n**********Ha seleccionado: Eliminar el registro de un usuario**********\n");
-							su.borrarUsuario();
-							break;
-						case 6:
-							System.out.println("\n**********Ha seleccionado: Eliminar todos los registros de usuarios**********\n");
-							su.borrarTodos();
-							break;
-						case 7:
-							System.out.println("\n**********Ha seleccionado: consulta interesante 4**********\n");
-							su.consultaInteresante1();
-							break;
-						case 8:
-							System.out.println("\n**********Ha seleccionado: consulta interesante 5**********\n");
-							su.consultaInteresante2();
-							break;
-                        case 9:
-                            System.out.println("\n**********Ha seleccionado: consulta interesante 6**********\n");
-							su.consultaInteresante3();
-							break;
-						case 10:
-							System.out.println("\n**********Ha seleccionado: consulta interesante 7**********\n");
-							su.consultaInteresante4();
-							break;
-						case 11:
-							System.out.println("\n**********Ha seleccionado: consulta interesante 8**********\n");
-							su.consultaInteresante5();
-							break;
-						default:
-							break;
+					switch (seleccion) {
+					case 1:
+						System.out.println("\n**********Ha seleccionado: Cargar usuario manualmente**********\n");
+						su.crearUsuario();
+						break;
+					case 2:
+						System.out.println(
+								"\n**********Ha seleccionado: Cargar usuarios desde un archivo .csv**********\n");
+						su.insertarUsuariosDesdeCsv();
+						break;
+					case 3:
+						System.out.println("\n**********Ha seleccionado: Leer el registro de un usuario**********\n");
+						su.mostrarUsuario();
+						break;
+					case 4:
+						System.out.println(
+								"\n**********Ha seleccionado: Leer todos los registros de usuarios**********\n");
+						su.mostrarTodos();
+						break;
+					case 5:
+						System.out
+								.println("\n**********Ha seleccionado: Eliminar el registro de un usuario**********\n");
+						su.borrarUsuario();
+						break;
+					case 6:
+						System.out.println(
+								"\n**********Ha seleccionado: Eliminar todos los registros de usuarios**********\n");
+						su.borrarTodos();
+						break;
+					case 7:
+						System.out.println("\n**********Ha seleccionado: Mostrar usuarios masculinos con una cantidad de twits entre 10.000 y 20.000**********\n");
+						su.consultaInteresante1();
+						break;
+					case 8:
+						System.out.println("\n**********Ha seleccionado: Mostrar usuarios mayores de edad interesados unicamente en deportes**********\n");
+						su.consultaInteresante2();
+						break;
+					case 9:
+						System.out.println("\n**********Ha seleccionado: Mostrar usuarios que no estan interesados en musica y arte**********\n");
+						su.consultaInteresante3();
+						break;
+					case 10:
+						System.out.println("\n**********Ha seleccionado: Mostrar a cuantos usuarios les interesa cada categoria de intereses**********\n");
+						su.consultaInteresante4();
+						break;
+					case 11:
+						System.out.println("\n**********Ha seleccionado: Mostrar registro de usuario femenino con mayor numero de tweets**********\n");
+						su.consultaInteresante5();
+						break;
+					default:
+						break;
 					}
 				}
 			}
 		} catch (AerospikeException e) {
-			System.out.println("Aerospike Exception - Mensaje: "+e.getMessage()+ "\n");
-			System.out.println("Aerospike Exception - Stack Trace: "+e.getStackTrace()+ "\n");
+			System.out.println("Aerospike Exception - Mensaje: " + e.getMessage() + "\n");
+			System.out.println("Aerospike Exception - Stack Trace: " + e.getStackTrace() + "\n");
 		} catch (Exception e) {
-			System.out.println("Exception - Mensaje: "+e.getMessage()+ "\n");
-			System.out.println("Exception - Stack Trace: "+e.getStackTrace()+ "\n");
+			System.out.println("Exception - Mensaje: " + e.getMessage() + "\n");
+			System.out.println("Exception - Stack Trace: " + e.getStackTrace() + "\n");
 		} finally {
 			if (cliente != null && cliente.isConnected()) {
 				cliente.close();
 			}
-			System.out.println("\nINFO: Presione cualquier tecla para salir");
+			System.out.println("\nINFO: Saliendo de la aplicación...");
+			System.out.println("\nINFO: Gracias por su atención!");
 		}
 	}
 
@@ -153,18 +157,9 @@ public class Demo {
 	}
 
 	public static void main(String[] args) {
-		Demo demo = new Demo("172.28.128.3", 3000);
-		ServicioUsuario su = new ServicioUsuario(demo.getCliente());
-		//su.insertarUsuariosDesdeCsv("src/main/resources/usuarios.csv");
-		//su.mostrarTodos();
-		//su.mostrarUsuario();
-		//su.borrarUsuario();
-		//su.crearUsuario();
-		//su.borrarTodos();
+		Demo demo = new Demo("172.28.128.4", 3000);
 		demo.work();
-
 
 	}
 
 }
-

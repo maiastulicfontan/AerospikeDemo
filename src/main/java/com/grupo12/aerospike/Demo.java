@@ -54,11 +54,11 @@ public class Demo {
 					System.out.println("4> Leer todos los registros de usuarios\n");
 					System.out.println("5> Eliminar el registro de un usuario\n");
 					System.out.println("6> Eliminar todos los registros de usuarios\n");
-					System.out.println("3> Consulta interesante 1\n");
-					System.out.println("4> Consulta interesante 2\n");
-					System.out.println("5> Consulta interesante 3\n");
-					System.out.println("6> Consulta interesante 4\n");
-					System.out.println("7> Consulta interesante 5\n");
+					System.out.println("7> Consulta interesante 1\n");
+					System.out.println("8> Consulta interesante 2\n");
+					System.out.println("9> Consulta interesante 3\n");
+					System.out.println("10> Consulta interesante 4\n");
+					System.out.println("11> Consulta interesante 5\n");
 					System.out.println("0> Salir\n");
 					System.out.println("\nSeleccione 0-5 y presione Enter\n");
 					seleccion = input.nextInt();
@@ -100,6 +100,14 @@ public class Demo {
                         case 9:
                             System.out.println("\n**********Ha seleccionado: consulta interesante 6**********\n");
 							su.consultaInteresante3();
+							break;
+						case 10:
+							System.out.println("\n**********Ha seleccionado: consulta interesante 7**********\n");
+							su.consultaInteresante4();
+							break;
+						case 11:
+							System.out.println("\n**********Ha seleccionado: consulta interesante 8**********\n");
+							su.consultaInteresante5();
 							break;
 						default:
 							break;

@@ -25,6 +25,21 @@ import com.aerospike.client.policy.ScanPolicy;
 import com.aerospike.client.policy.WritePolicy;
 
 public class ServicioUsuario {
+	public static int contadorR;
+	public static int max_tweets;
+	public static String nombreConsultaI5;
+	public static String passwordConsultaI5;
+	public static String generoConsultaI5;
+	public static String fecha_nacConsultaI5;
+	public static String cont_tweetsConsultaI5;
+	public static String interesesConsultaI5;
+	public static int acuDeportes;
+	public static int acuLiteratura;
+	public static int acuTecnologia;
+	public static int acuFinanzas;
+	public static int acuFotografia;
+	public static int acuMusica;
+	public static int acuArte;
 	private AerospikeClient cliente;
 	private long contadorRegistros;
 	private Set<String> keys = new LinkedHashSet<String>();
@@ -240,22 +255,22 @@ public class ServicioUsuario {
 		policy.includeBinData = true;
 
 		cliente.scanAll(policy, "test", "usuarios", new ScanCallback() {
-
 			@Override
 			public void scanCallback(Key key, Record registro) throws AerospikeException{
 				keys.add(registro.getValue("nom_usuario").toString());
 				int min_tweets = 10000;
 				int max_tweets = 20000;
 				if (registro.getValue("genero").equals("M")  && Integer.parseInt(registro.getValue("cont_tweets").toString()) > min_tweets && Integer.parseInt(registro.getValue("cont_tweets").toString()) < max_tweets ){
-					contadorRegistros=+1;
+
 					System.out.println("\n" + registro.getValue("nom_usuario") + ", " + registro.getValue("password") + ", " + registro.getValue("genero") + ", " + registro.getValue("fecha_nac") +
 							", " + registro.getValue("cont_tweets") + ", " + registro.getValue("intereses") + "\n");
-
+					contadorR++;
 				}
 			}
 		});
-		System.out.println("\nSe han encontrado "+contadorRegistros+" registros");
-		this.setKeys(keys);
+		System.out.println("\nSe han encontrado "+contadorR+" registros");
+		contadorR=0;
+
 	}
 
 	public void consultaInteresante2(){
@@ -281,15 +296,16 @@ public class ServicioUsuario {
 				stringIntereses = stringIntereses.replace("]","");
 				String[] arrIntereses =  stringIntereses.split(",",0);
 				if (edad>18 && arrIntereses.length == 1 && arrIntereses[0].equals("deportes") ){
-					contadorRegistros=contadorRegistros +1;
+
 					System.out.println("\n" + registro.getValue("nom_usuario") + ", " + registro.getValue("password") + ", " + registro.getValue("genero") + ", " + registro.getValue("fecha_nac") +
 							", " + registro.getValue("cont_tweets") + ", " + registro.getValue("intereses") + "\n");
-
+					contadorR++;
 				}
 			}
 		});
-		System.out.println("\nSe han encontrado "+contadorRegistros+" registros");
-		this.setKeys(keys);
+		System.out.println("\nSe han encontrado "+contadorR+" registros");
+		contadorR=0;
+
 	}
 
 	public void consultaInteresante3(){
@@ -319,17 +335,125 @@ public class ServicioUsuario {
 					}
 				}
 				if (!interesaMusicaArte) {
-					contadorRegistros = contadorRegistros + 1;
 					System.out.println("\n" + registro.getValue("nom_usuario") + ", " + registro.getValue("password") + ", " + registro.getValue("genero") + ", " + registro.getValue("fecha_nac") +
 							", " + registro.getValue("cont_tweets") + ", " + registro.getValue("intereses") + "\n");
+					contadorR++;
 				}
-
 
 			}
 		});
-		System.out.println("\nSe han encontrado "+contadorRegistros+" registros");
-		this.setKeys(keys);
+		System.out.println("\nSe han encontrado "+contadorR+" registros");
+		contadorR=0;
+
+
+	}
+	public void consultaInteresante4(){
+		System.out.println("\n**************Mostrando a cuantos usuarios le interesa cada categoria de intereses**************\n");
+		System.out.println("Interes			CantUsuarios");
+		ScanPolicy policy = new ScanPolicy();
+		policy.concurrentNodes = true;
+		policy.priority = Priority.LOW;
+		policy.includeBinData = true;
+
+
+		cliente.scanAll(policy, "test", "usuarios", new ScanCallback() {
+			int contUsuariosMusica;
+			int contUsuariosDeportes;
+			int contUsuariosLiteratura;
+			int contUsuariosTecnologia;
+			int contUsuariosFinanzas;
+			int contUsuariosArte;
+			int contUsuariosFotografia;
+			@Override
+			public void scanCallback(Key key, Record registro) throws AerospikeException{
+				keys.add(registro.getValue("nom_usuario").toString());
+
+				Object objectIntereses = registro.getValue("intereses");
+				String stringIntereses = objectIntereses.toString();
+				stringIntereses = stringIntereses.replace(" ","");
+				stringIntereses = stringIntereses.replace("[","");
+				stringIntereses = stringIntereses.replace("]","");
+				String[] arrIntereses =  stringIntereses.split(",",0);
+
+
+					if (Arrays.asList(arrIntereses).contains("musica")){
+						contUsuariosMusica=contUsuariosMusica+1;
+					}
+					if (Arrays.asList(arrIntereses).contains("deportes")){
+						contUsuariosDeportes++;
+					}
+					if (Arrays.asList(arrIntereses).contains("literatura")){
+						contUsuariosLiteratura++;
+					}
+					if (Arrays.asList(arrIntereses).contains("finanzas")){
+						contUsuariosFinanzas++;
+					}
+					if (Arrays.asList(arrIntereses).contains("tecnologia")){
+						contUsuariosTecnologia++;
+					}
+					if (Arrays.asList(arrIntereses).contains("fotografia")){
+						contUsuariosFotografia++;
+					}
+					if (Arrays.asList(arrIntereses).contains("arte")){
+						contUsuariosArte++;
+					}
+					acuArte=acuArte+contUsuariosArte;
+					acuMusica=acuMusica+contUsuariosMusica;
+					acuDeportes=acuDeportes+contUsuariosDeportes;
+					acuFinanzas=acuFinanzas+contUsuariosFinanzas;
+					acuFotografia=acuFotografia+contUsuariosFotografia;
+					acuTecnologia=acuTecnologia+contUsuariosTecnologia;
+					acuLiteratura=acuLiteratura+contUsuariosLiteratura;
+					contUsuariosArte=0;
+					contUsuariosMusica=0;
+					contUsuariosDeportes=0;
+					contUsuariosFinanzas=0;
+					contUsuariosFotografia=0;
+					contUsuariosLiteratura=0;
+					contUsuariosTecnologia=0;
+
+			}
+		});
+		System.out.println("Arte			"+acuArte);
+		System.out.println("Musica			"+acuMusica);
+		System.out.println("Deportes		"+acuDeportes);
+		System.out.println("Finanzas		"+acuFinanzas);
+		System.out.println("Fotografia		"+acuFotografia);
+		System.out.println("Literatura		"+acuLiteratura);
+		System.out.println("Tecnologia		"+acuTecnologia);
 	}
 
+
+	public void consultaInteresante5(){
+		System.out.println("\n**************Mostrando al usuario femenino con mayor numero de tweets**************\n");
+		System.out.println("nom_usuario, password, genero, fecha_nac, cont_tweets, intereses");
+		ScanPolicy policy = new ScanPolicy();
+		policy.concurrentNodes = true;
+		policy.priority = Priority.LOW;
+		policy.includeBinData = true;
+
+
+		cliente.scanAll(policy, "test", "usuarios", new ScanCallback() {
+			@Override
+			public void scanCallback(Key key, Record registro) throws AerospikeException{
+				keys.add(registro.getValue("nom_usuario").toString());
+				if (registro.getValue("genero").equals("F")){
+
+					if (Integer.parseInt(registro.getValue("cont_tweets").toString()) > max_tweets){
+						max_tweets=Integer.parseInt(registro.getValue("cont_tweets").toString());
+						nombreConsultaI5=(registro.getValue("nom_usuario").toString());
+						passwordConsultaI5=(registro.getValue("password").toString());
+						generoConsultaI5=(registro.getValue("genero").toString());
+						fecha_nacConsultaI5=(registro.getValue("fecha_nac").toString());
+						cont_tweetsConsultaI5=(registro.getValue("cont_tweets").toString());
+						interesesConsultaI5=(registro.getValue("intereses").toString());
+					}
+
+				}
+			}
+		});
+		System.out.println("\n" + nombreConsultaI5 + ", " + passwordConsultaI5 + ", " + generoConsultaI5 + ", " + fecha_nacConsultaI5 +
+				", " + cont_tweetsConsultaI5 + ", " + interesesConsultaI5 + "\n");
+	}
 }
 
